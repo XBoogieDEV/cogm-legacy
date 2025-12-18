@@ -2,11 +2,17 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useSubmissions } from "../context/SubmissionsContext";
-import { DeceasedMemberSubmission } from "../types";
+import { useRouter } from "next/navigation";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Doc, Id } from "../../convex/_generated/dataModel";
+import { useAuth } from "../providers/AuthProvider";
+
+type Submission = Doc<"submissions">;
+type SubmissionStatus = "pending" | "reviewed" | "published";
 
 // Status badge component
-function StatusBadge({ status }: { status: DeceasedMemberSubmission['status'] }) {
+function StatusBadge({ status }: { status: SubmissionStatus }) {
   const styles = {
     pending: 'bg-amber-100 text-amber-800 border-amber-200',
     reviewed: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -76,21 +82,18 @@ function DetailModal({
   onClose,
   onStatusChange
 }: {
-  submission: DeceasedMemberSubmission;
+  submission: Submission;
   onClose: () => void;
-  onStatusChange: (id: string, status: DeceasedMemberSubmission['status']) => void;
+  onStatusChange: (id: Id<"submissions">, status: SubmissionStatus) => void;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-charcoal/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="relative bg-dove-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="bg-gradient-to-r from-maroon to-maroon-dark px-6 py-4">
           <div className="flex items-start justify-between">
             <div>
@@ -108,10 +111,8 @@ function DetailModal({
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           <div className="grid gap-6">
-            {/* Status & Actions */}
             <div className="flex items-center justify-between pb-4 border-b border-cream-dark">
               <div className="flex items-center gap-3">
                 <span className="font-body text-sm text-charcoal/60">Status:</span>
@@ -120,7 +121,7 @@ function DetailModal({
               <div className="flex gap-2">
                 {submission.status === 'pending' && (
                   <button
-                    onClick={() => onStatusChange(submission.id, 'reviewed')}
+                    onClick={() => onStatusChange(submission._id, 'reviewed')}
                     className="px-3 py-1.5 text-sm font-body bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                   >
                     Mark Reviewed
@@ -128,7 +129,7 @@ function DetailModal({
                 )}
                 {submission.status !== 'published' && (
                   <button
-                    onClick={() => onStatusChange(submission.id, 'published')}
+                    onClick={() => onStatusChange(submission._id, 'published')}
                     className="px-3 py-1.5 text-sm font-body bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
                   >
                     Publish
@@ -137,7 +138,6 @@ function DetailModal({
               </div>
             </div>
 
-            {/* Member Information */}
             <div>
               <h3 className="font-display text-lg text-maroon mb-3">Deceased Member Information</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -176,45 +176,23 @@ function DetailModal({
               </div>
             </div>
 
-            {/* Documents */}
-            {(submission.obituaryLink || submission.obituaryFiles.length > 0 || submission.programFiles.length > 0) && (
+            {submission.obituaryLink && (
               <div>
                 <h3 className="font-display text-lg text-maroon mb-3">Documents</h3>
-                <div className="space-y-2">
-                  {submission.obituaryLink && (
-                    <a
-                      href={submission.obituaryLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-gold hover:text-gold-dark transition-colors font-body text-sm"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                      View Obituary Link
-                    </a>
-                  )}
-                  {submission.obituaryFiles.length > 0 && (
-                    <div className="flex items-center gap-2 text-charcoal/70 font-body text-sm">
-                      <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                      </svg>
-                      Obituary: {submission.obituaryFiles.join(', ')}
-                    </div>
-                  )}
-                  {submission.programFiles.length > 0 && (
-                    <div className="flex items-center gap-2 text-charcoal/70 font-body text-sm">
-                      <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                      </svg>
-                      Program: {submission.programFiles.join(', ')}
-                    </div>
-                  )}
-                </div>
+                <a
+                  href={submission.obituaryLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gold hover:text-gold-dark transition-colors font-body text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  View Obituary Link
+                </a>
               </div>
             )}
 
-            {/* Memorial Service */}
             {(submission.memorialServiceDate || submission.memorialServiceLocation) && (
               <div>
                 <h3 className="font-display text-lg text-maroon mb-3">Memorial Service</h3>
@@ -238,63 +216,21 @@ function DetailModal({
                     </div>
                   )}
                 </div>
-                {submission.memorialServiceNotes && (
-                  <div className="mt-3">
-                    <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Notes</p>
-                    <p className="font-body text-charcoal text-sm">{submission.memorialServiceNotes}</p>
-                  </div>
-                )}
               </div>
             )}
 
-            {/* Family Contact */}
-            {(submission.familyContactName || submission.familyContactEmail || submission.familyContactPhone) && (
-              <div>
-                <h3 className="font-display text-lg text-maroon mb-3">Family Contact</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {submission.familyContactName && (
-                    <div>
-                      <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Name</p>
-                      <p className="font-body text-charcoal">{submission.familyContactName}</p>
-                    </div>
-                  )}
-                  {submission.familyContactEmail && (
-                    <div>
-                      <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Email</p>
-                      <a href={`mailto:${submission.familyContactEmail}`} className="font-body text-gold hover:underline">
-                        {submission.familyContactEmail}
-                      </a>
-                    </div>
-                  )}
-                  {submission.familyContactPhone && (
-                    <div>
-                      <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Phone</p>
-                      <a href={`tel:${submission.familyContactPhone}`} className="font-body text-gold hover:underline">
-                        {submission.familyContactPhone}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Submitter Info */}
             <div className="pt-4 border-t border-cream-dark">
               <h3 className="font-display text-lg text-maroon mb-3">Submission Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Submitted By</p>
-                  <p className="font-body text-charcoal">{submission.submitterName || 'Not provided'}</p>
+                  <p className="font-body text-charcoal">{submission.submitterName}</p>
                 </div>
                 <div>
                   <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Email</p>
-                  {submission.submitterEmail ? (
-                    <a href={`mailto:${submission.submitterEmail}`} className="font-body text-gold hover:underline">
-                      {submission.submitterEmail}
-                    </a>
-                  ) : (
-                    <p className="font-body text-charcoal/50">Not provided</p>
-                  )}
+                  <a href={`mailto:${submission.submitterEmail}`} className="font-body text-gold hover:underline">
+                    {submission.submitterEmail}
+                  </a>
                 </div>
                 <div>
                   <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Submitted On</p>
@@ -310,19 +246,15 @@ function DetailModal({
                 </div>
                 <div>
                   <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Record ID</p>
-                  <p className="font-body text-charcoal font-mono text-sm">{submission.id}</p>
+                  <p className="font-body text-charcoal font-mono text-sm">{submission._id}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 bg-cream-dark/30 border-t border-cream-dark flex justify-end">
-          <button
-            onClick={onClose}
-            className="btn-secondary text-sm py-2 px-4"
-          >
+          <button onClick={onClose} className="btn-secondary text-sm py-2 px-4">
             Close
           </button>
         </div>
@@ -331,64 +263,76 @@ function DetailModal({
   );
 }
 
+// Loading skeleton
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-cream">
+      <nav className="bg-maroon-dark text-dove-white">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="h-8 w-48 bg-white/20 rounded animate-pulse" />
+        </div>
+      </nav>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="memorial-card p-6">
+              <div className="h-20 bg-cream-dark rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="memorial-card p-6">
+          <div className="h-96 bg-cream-dark rounded animate-pulse" />
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
-  const { submissions, updateSubmissionStatus } = useSubmissions();
+  const router = useRouter();
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | DeceasedMemberSubmission['status']>('all');
-  const [selectedSubmission, setSelectedSubmission] = useState<DeceasedMemberSubmission | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | SubmissionStatus>('all');
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'jurisdiction'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // Calculate stats
-  const stats = useMemo(() => {
-    const now = new Date();
-    const thisMonth = submissions.filter(s => {
-      const submitted = new Date(s.submittedAt);
-      return submitted.getMonth() === now.getMonth() && submitted.getFullYear() === now.getFullYear();
-    }).length;
+  // Convex queries
+  const submissions = useQuery(api.submissions.list, {
+    status: statusFilter === 'all' ? undefined : statusFilter,
+  });
+  const stats = useQuery(api.submissions.getStats, {});
+  const updateStatusMutation = useMutation(api.submissions.updateStatus);
 
-    const lastMonth = submissions.filter(s => {
-      const submitted = new Date(s.submittedAt);
-      const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
-      return submitted.getMonth() === lastMonthDate.getMonth() && submitted.getFullYear() === lastMonthDate.getFullYear();
-    }).length;
+  // Redirect to login if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    router.push('/admin/login');
+    return null;
+  }
 
-    return {
-      total: submissions.length,
-      pending: submissions.filter(s => s.status === 'pending').length,
-      reviewed: submissions.filter(s => s.status === 'reviewed').length,
-      published: submissions.filter(s => s.status === 'published').length,
-      thisMonth,
-      monthTrend: thisMonth - lastMonth
-    };
-  }, [submissions]);
+  if (authLoading || !submissions || !stats) {
+    return <LoadingSkeleton />;
+  }
 
   // Filter and sort submissions
-  const filteredSubmissions = useMemo(() => {
+  const filteredSubmissions = (() => {
     let result = [...submissions];
 
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(s =>
         s.fullName.toLowerCase().includes(query) ||
         s.jurisdiction.toLowerCase().includes(query) ||
-        s.title.toLowerCase().includes(query) ||
-        s.id.toLowerCase().includes(query)
+        s.title.toLowerCase().includes(query)
       );
     }
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      result = result.filter(s => s.status === statusFilter);
-    }
-
-    // Sort
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
         case 'date':
-          comparison = new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime();
+          comparison = a.submittedAt - b.submittedAt;
           break;
         case 'name':
           comparison = a.fullName.localeCompare(b.fullName);
@@ -401,7 +345,7 @@ export default function AdminDashboard() {
     });
 
     return result;
-  }, [submissions, searchQuery, statusFilter, sortBy, sortOrder]);
+  })();
 
   const handleSort = (field: 'date' | 'name' | 'jurisdiction') => {
     if (sortBy === field) {
@@ -410,6 +354,16 @@ export default function AdminDashboard() {
       setSortBy(field);
       setSortOrder('desc');
     }
+  };
+
+  const handleStatusChange = async (id: Id<"submissions">, status: SubmissionStatus) => {
+    await updateStatusMutation({ id, status });
+    setSelectedSubmission(prev => prev && prev._id === id ? { ...prev, status } : prev);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/admin/login');
   };
 
   return (
@@ -424,15 +378,20 @@ export default function AdminDashboard() {
             <div className="h-6 w-px bg-white/20 hidden sm:block" />
             <h1 className="font-display text-xl hidden sm:block">Admin Dashboard</h1>
           </div>
-          <Link
-            href="/"
-            className="font-body text-sm text-dove-white/80 hover:text-white transition-colors flex items-center gap-1.5"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Form
-          </Link>
+          <div className="flex items-center gap-4">
+            <span className="font-body text-sm text-dove-white/70 hidden sm:block">
+              {user?.name}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="font-body text-sm text-dove-white/80 hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -448,7 +407,7 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             }
-            trend={{ value: stats.monthTrend, label: 'from last month' }}
+            trend={{ value: stats.recentCount, label: 'this week' }}
           />
           <StatCard
             title="Pending Review"
@@ -484,12 +443,10 @@ export default function AdminDashboard() {
 
         {/* Submissions Table */}
         <div className="memorial-card">
-          {/* Table Header */}
           <div className="px-6 py-4 border-b border-cream-dark">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <h2 className="font-display text-xl text-maroon">Memorial Submissions</h2>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                {/* Search */}
                 <div className="relative">
                   <svg className="w-5 h-5 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -502,7 +459,6 @@ export default function AdminDashboard() {
                     className="elegant-input pl-10 py-2 text-sm w-full sm:w-64"
                   />
                 </div>
-                {/* Status Filter */}
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
@@ -517,7 +473,6 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -585,7 +540,7 @@ export default function AdminDashboard() {
                 ) : (
                   filteredSubmissions.map((submission) => (
                     <tr
-                      key={submission.id}
+                      key={submission._id}
                       className="hover:bg-cream-dark/20 transition-colors cursor-pointer"
                       onClick={() => setSelectedSubmission(submission)}
                     >
@@ -631,24 +586,19 @@ export default function AdminDashboard() {
             </table>
           </div>
 
-          {/* Table Footer */}
           <div className="px-6 py-4 border-t border-cream-dark bg-cream-dark/20">
             <p className="font-body text-sm text-charcoal/60">
-              Showing {filteredSubmissions.length} of {submissions.length} submissions
+              Showing {filteredSubmissions.length} of {stats.total} submissions
             </p>
           </div>
         </div>
       </main>
 
-      {/* Detail Modal */}
       {selectedSubmission && (
         <DetailModal
           submission={selectedSubmission}
           onClose={() => setSelectedSubmission(null)}
-          onStatusChange={(id, status) => {
-            updateSubmissionStatus(id, status);
-            setSelectedSubmission(prev => prev ? { ...prev, status } : null);
-          }}
+          onStatusChange={handleStatusChange}
         />
       )}
     </div>

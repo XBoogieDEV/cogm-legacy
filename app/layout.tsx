@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lato } from "next/font/google";
 import "./globals.css";
-import { SubmissionsProvider } from "./context/SubmissionsContext";
+import { ConvexClientProvider } from "./providers/ConvexProvider";
+import { AuthProvider } from "./providers/AuthProvider";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -33,9 +34,11 @@ export default function RootLayout({
       <body
         className={`${cormorant.variable} ${lato.variable} antialiased`}
       >
-        <SubmissionsProvider>
-          {children}
-        </SubmissionsProvider>
+        <ConvexClientProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );

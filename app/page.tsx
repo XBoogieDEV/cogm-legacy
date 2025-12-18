@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, FormEvent, DragEvent } from "react";
-import { useSubmissions } from "./context/SubmissionsContext";
+import { useMutation } from "convex/react";
+import { api } from "../convex/_generated/api";
 
 // Jurisdiction options - organized by region
 const jurisdictions = {
@@ -95,7 +96,7 @@ function CollapsibleSection({
 }
 
 export default function Home() {
-  const { addSubmission } = useSubmissions();
+  const createSubmission = useMutation(api.submissions.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
@@ -163,32 +164,28 @@ export default function Home() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      await createSubmission({
+        fullName: formData.fullName,
+        passingDate: formData.passingDate,
+        title: formData.title,
+        jurisdiction: formData.jurisdiction,
+        yearsOfService: formData.yearsOfService,
+        causeOfDeath: formData.causeOfDeath || undefined,
+        obituaryLink: formData.obituaryLink || undefined,
+        memorialServiceDate: formData.memorialServiceDate || undefined,
+        memorialServiceLocation: formData.memorialServiceLocation || undefined,
+        submitterName: formData.submitterName,
+        submitterEmail: formData.submitterEmail,
+      });
 
-    // Add to submissions
-    addSubmission({
-      fullName: formData.fullName,
-      passingDate: formData.passingDate,
-      title: formData.title,
-      jurisdiction: formData.jurisdiction,
-      yearsOfService: formData.yearsOfService,
-      causeOfDeath: formData.causeOfDeath || undefined,
-      obituaryLink: formData.obituaryLink || undefined,
-      memorialServiceDate: formData.memorialServiceDate || undefined,
-      memorialServiceLocation: formData.memorialServiceLocation || undefined,
-      memorialServiceNotes: formData.memorialServiceNotes || undefined,
-      familyContactName: formData.familyContactName || undefined,
-      familyContactEmail: formData.familyContactEmail || undefined,
-      familyContactPhone: formData.familyContactPhone || undefined,
-      obituaryFiles: obituaryFiles.map(f => f.file.name),
-      programFiles: programFiles.map(f => f.file.name),
-      submitterName: formData.submitterName || undefined,
-      submitterEmail: formData.submitterEmail || undefined,
-    });
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit:", error);
+      alert("Failed to submit. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollToForm = () => {
