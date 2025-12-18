@@ -228,11 +228,8 @@ export default function Home() {
       {/* Header Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-cream/80 backdrop-blur-md border-b border-gold/20">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-maroon flex items-center justify-center">
-              <span className="text-gold font-display font-bold text-lg">C</span>
-            </div>
-            <span className="font-display text-maroon font-medium hidden sm:block">COGM Memorial</span>
+          <Link href="/" className="flex items-center">
+            <span className="font-display text-maroon font-medium">COGM Memorial</span>
           </Link>
           <Link
             href="/admin"

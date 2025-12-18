@@ -418,11 +418,8 @@ export default function AdminDashboard() {
       <nav className="bg-maroon-dark text-dove-white">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center">
-                <span className="text-maroon-dark font-display font-bold text-lg">C</span>
-              </div>
-              <span className="font-display text-lg hidden sm:block">COGM Memorial</span>
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <span className="font-display text-lg">COGM Memorial</span>
             </Link>
             <div className="h-6 w-px bg-white/20 hidden sm:block" />
             <h1 className="font-display text-xl hidden sm:block">Admin Dashboard</h1>
