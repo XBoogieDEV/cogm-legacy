@@ -76,6 +76,144 @@ function StatCard({
   );
 }
 
+// File Viewer Component - displays stored files with download links
+function FileViewer({
+  storageIds,
+  title,
+  icon
+}: {
+  storageIds: Id<"_storage">[];
+  title: string;
+  icon: React.ReactNode;
+}) {
+  const fileUrls = useQuery(
+    api.files.getFileUrls,
+    storageIds.length > 0 ? { storageIds } : "skip"
+  );
+
+  if (storageIds.length === 0) {
+    return (
+      <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+            {icon}
+          </div>
+          <div className="flex-1">
+            <p className="font-display text-sm text-charcoal/40">{title}</p>
+            <p className="font-body text-xs text-charcoal/30 mt-0.5">No files uploaded</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-5">
+      {/* Decorative corner accent */}
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gold/20 to-transparent" />
+
+      <div className="flex items-start gap-4">
+        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-md flex-shrink-0">
+          {icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-display text-base text-charcoal mb-3">{title}</p>
+          <div className="space-y-2">
+            {fileUrls === undefined ? (
+              <div className="flex items-center gap-2 text-charcoal/50">
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="font-body text-xs">Loading files...</span>
+              </div>
+            ) : (
+              fileUrls.map((file, index) => (
+                <a
+                  key={file.storageId}
+                  href={file.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-2.5 bg-white/60 rounded-lg border border-cream-dark hover:border-gold hover:bg-white transition-all group"
+                >
+                  <div className="w-8 h-8 rounded bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-body text-sm text-charcoal group-hover:text-maroon transition-colors">
+                      File {index + 1}
+                    </p>
+                    <p className="font-body text-xs text-charcoal/50">Click to view/download</p>
+                  </div>
+                  <svg className="w-4 h-4 text-charcoal/30 group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Document Card Component - for external links (like obituary URL)
+function DocumentCard({
+  title,
+  link,
+  icon
+}: {
+  title: string;
+  link?: string;
+  icon: React.ReactNode;
+}) {
+  if (!link) {
+    return (
+      <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+            {icon}
+          </div>
+          <div className="flex-1">
+            <p className="font-display text-sm text-charcoal/40">{title}</p>
+            <p className="font-body text-xs text-charcoal/30 mt-0.5">Not provided</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-5 transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-0.5"
+    >
+      {/* Decorative corner accent */}
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gold/20 to-transparent" />
+
+      <div className="flex items-center gap-4">
+        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+          {icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-display text-base text-charcoal group-hover:text-maroon transition-colors">{title}</p>
+          <p className="font-body text-xs text-charcoal/60 mt-0.5 truncate">Click to view document</p>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 // Detail Modal Component
 function DetailModal({
   submission,
@@ -86,6 +224,10 @@ function DetailModal({
   onClose: () => void;
   onStatusChange: (id: Id<"submissions">, status: SubmissionStatus) => void;
 }) {
+  const hasDocuments = submission.obituaryLink ||
+    (submission.obituaryFileIds && submission.obituaryFileIds.length > 0) ||
+    (submission.programFileIds && submission.programFileIds.length > 0);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -176,22 +318,54 @@ function DetailModal({
               </div>
             </div>
 
-            {submission.obituaryLink && (
-              <div>
-                <h3 className="font-display text-lg text-maroon mb-3">Documents</h3>
-                <a
-                  href={submission.obituaryLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gold hover:text-gold-dark transition-colors font-body text-sm"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  View Obituary Link
-                </a>
+            {/* Enhanced Documents Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="font-display text-lg text-maroon">Supporting Documents</h3>
+                {hasDocuments && (
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-white text-xs font-bold">
+                    {(submission.obituaryLink ? 1 : 0) +
+                     (submission.obituaryFileIds?.length || 0) +
+                     (submission.programFileIds?.length || 0)}
+                  </span>
+                )}
               </div>
-            )}
+
+              <div className="grid gap-3">
+                {/* Obituary Link */}
+                <DocumentCard
+                  title="Obituary Link"
+                  link={submission.obituaryLink}
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  }
+                />
+
+                {/* Uploaded Obituary Files */}
+                <FileViewer
+                  storageIds={submission.obituaryFileIds || []}
+                  title="Obituary Documents"
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                  }
+                />
+
+                {/* Uploaded Memorial Program Files */}
+                <FileViewer
+                  storageIds={submission.programFileIds || []}
+                  title="Memorial Program"
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  }
+                />
+              </div>
+            </div>
 
             {(submission.memorialServiceDate || submission.memorialServiceLocation) && (
               <div>

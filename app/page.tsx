@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useRef, FormEvent, DragEvent } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
+import { Id } from "../convex/_generated/dataModel";
 
 // Jurisdiction options - organized by region
 const jurisdictions = {
@@ -40,6 +41,69 @@ const titles = [
 interface FileUpload {
   file: File;
   preview?: string;
+}
+
+// File Preview Component
+function FilePreview({
+  fileUpload,
+  onRemove
+}: {
+  fileUpload: FileUpload;
+  onRemove: () => void;
+}) {
+  const { file, preview } = fileUpload;
+  const isImage = file.type.startsWith('image/');
+  const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  const isDoc = file.name.toLowerCase().endsWith('.doc') || file.name.toLowerCase().endsWith('.docx');
+
+  return (
+    <div className="relative group">
+      <div className="w-24 h-24 rounded-lg border-2 border-cream-dark bg-white overflow-hidden flex items-center justify-center">
+        {isImage && preview ? (
+          <img
+            src={preview}
+            alt={file.name}
+            className="w-full h-full object-cover"
+          />
+        ) : isPDF ? (
+          <div className="flex flex-col items-center justify-center text-red-500">
+            <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zm-2.5 9.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-3 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+            </svg>
+            <span className="text-xs font-bold mt-1">PDF</span>
+          </div>
+        ) : isDoc ? (
+          <div className="flex flex-col items-center justify-center text-blue-500">
+            <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM9 13h6v2H9v-2zm0 4h6v2H9v-2z"/>
+            </svg>
+            <span className="text-xs font-bold mt-1">DOC</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-gold">
+            <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/>
+            </svg>
+            <span className="text-xs font-bold mt-1">FILE</span>
+          </div>
+        )}
+      </div>
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onRemove(); }}
+        className="absolute -top-2 -right-2 w-6 h-6 bg-maroon text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-maroon-dark"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      {/* Filename */}
+      <p className="mt-1.5 text-xs text-charcoal/70 font-body truncate w-24 text-center" title={file.name}>
+        {file.name}
+      </p>
+    </div>
+  );
 }
 
 // Section Header Component
@@ -97,10 +161,43 @@ function CollapsibleSection({
 
 export default function Home() {
   const createSubmission = useMutation(api.submissions.create);
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formStarted, setFormStarted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
   const formRef = useRef<HTMLDivElement>(null);
+
+  // Function to upload a single file to Convex storage
+  const uploadFile = async (file: File): Promise<Id<"_storage">> => {
+    // Get upload URL from Convex
+    const uploadUrl = await generateUploadUrl();
+
+    // Upload the file
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload file: ${file.name}`);
+    }
+
+    const { storageId } = await response.json();
+    return storageId as Id<"_storage">;
+  };
+
+  // Function to upload multiple files
+  const uploadFiles = async (files: FileUpload[]): Promise<Id<"_storage">[]> => {
+    const storageIds: Id<"_storage">[] = [];
+    for (let i = 0; i < files.length; i++) {
+      setUploadProgress(`Uploading file ${i + 1} of ${files.length}...`);
+      const storageId = await uploadFile(files[i].file);
+      storageIds.push(storageId);
+    }
+    return storageIds;
+  };
 
   // Form state - Core required fields
   const [formData, setFormData] = useState({
@@ -164,8 +261,25 @@ export default function Home() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setUploadProgress("");
 
     try {
+      // Upload obituary files if any
+      let obituaryFileIds: Id<"_storage">[] | undefined;
+      if (obituaryFiles.length > 0) {
+        setUploadProgress("Uploading obituary documents...");
+        obituaryFileIds = await uploadFiles(obituaryFiles);
+      }
+
+      // Upload program files if any
+      let programFileIds: Id<"_storage">[] | undefined;
+      if (programFiles.length > 0) {
+        setUploadProgress("Uploading memorial programs...");
+        programFileIds = await uploadFiles(programFiles);
+      }
+
+      setUploadProgress("Saving submission...");
+
       await createSubmission({
         fullName: formData.fullName,
         passingDate: formData.passingDate,
@@ -176,6 +290,8 @@ export default function Home() {
         obituaryLink: formData.obituaryLink || undefined,
         memorialServiceDate: formData.memorialServiceDate || undefined,
         memorialServiceLocation: formData.memorialServiceLocation || undefined,
+        obituaryFileIds: obituaryFileIds,
+        programFileIds: programFileIds,
         submitterName: formData.submitterName,
         submitterEmail: formData.submitterEmail,
       });
@@ -186,6 +302,7 @@ export default function Home() {
       alert("Failed to submit. Please try again.");
     } finally {
       setIsSubmitting(false);
+      setUploadProgress("");
     }
   };
 
@@ -566,25 +683,15 @@ export default function Home() {
                           <p className="font-body text-xs text-charcoal/40 mt-1">PDF, DOC, or images (max 5)</p>
                         </div>
                         {obituaryFiles.length > 0 && (
-                          <ul className="mt-3 space-y-2">
+                          <div className="mt-4 flex flex-wrap gap-4">
                             {obituaryFiles.map((f, i) => (
-                              <li key={i} className="flex items-center gap-2 text-sm bg-cream-dark/50 rounded px-3 py-2">
-                                <svg className="w-4 h-4 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="flex-1 truncate font-body">{f.file.name}</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); removeFile(i, 'obituary'); }}
-                                  className="text-maroon hover:text-maroon-dark p-1"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              </li>
+                              <FilePreview
+                                key={i}
+                                fileUpload={f}
+                                onRemove={() => removeFile(i, 'obituary')}
+                              />
                             ))}
-                          </ul>
+                          </div>
                         )}
                       </div>
 
@@ -615,25 +722,15 @@ export default function Home() {
                           <p className="font-body text-xs text-charcoal/40 mt-1">PDF, DOC, or images (max 5)</p>
                         </div>
                         {programFiles.length > 0 && (
-                          <ul className="mt-3 space-y-2">
+                          <div className="mt-4 flex flex-wrap gap-4">
                             {programFiles.map((f, i) => (
-                              <li key={i} className="flex items-center gap-2 text-sm bg-cream-dark/50 rounded px-3 py-2">
-                                <svg className="w-4 h-4 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                                </svg>
-                                <span className="flex-1 truncate font-body">{f.file.name}</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); removeFile(i, 'program'); }}
-                                  className="text-maroon hover:text-maroon-dark p-1"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              </li>
+                              <FilePreview
+                                key={i}
+                                fileUpload={f}
+                                onRemove={() => removeFile(i, 'program')}
+                              />
                             ))}
-                          </ul>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -797,7 +894,7 @@ export default function Home() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Submitting...
+                        {uploadProgress || "Submitting..."}
                       </>
                     ) : (
                       <>
