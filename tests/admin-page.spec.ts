@@ -125,6 +125,68 @@ test.describe('Admin Dashboard - Status Management', () => {
   });
 });
 
+test.describe('Admin Dashboard - Document Preview', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/admin');
+  });
+
+  test('should display Supporting Documents section in modal', async ({ page }) => {
+    const viewButton = page.locator('button:has-text("View")').first();
+
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await page.waitForTimeout(500);
+
+      // Check for the Supporting Documents section
+      const documentsSection = page.locator('h3:has-text("Supporting Documents")');
+      await expect(documentsSection).toBeVisible({ timeout: 5000 });
+
+      // Check for document cards (either with content or placeholder)
+      const documentCards = page.locator('[class*="rounded-xl"][class*="border"]');
+      expect(await documentCards.count()).toBeGreaterThan(0);
+    }
+  });
+
+  test('should show obituary link card', async ({ page }) => {
+    const viewButton = page.locator('button:has-text("View")').first();
+
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await page.waitForTimeout(500);
+
+      // Check for Obituary Link section
+      const obituaryCard = page.locator('text=Obituary Link');
+      await expect(obituaryCard).toBeVisible({ timeout: 5000 });
+    }
+  });
+
+  test('should show obituary documents card', async ({ page }) => {
+    const viewButton = page.locator('button:has-text("View")').first();
+
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await page.waitForTimeout(500);
+
+      // Check for Obituary Documents section
+      const obituaryDocsCard = page.locator('text=Obituary Documents');
+      await expect(obituaryDocsCard).toBeVisible({ timeout: 5000 });
+    }
+  });
+
+  test('should show memorial program card', async ({ page }) => {
+    const viewButton = page.locator('button:has-text("View")').first();
+
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await page.waitForTimeout(500);
+
+      // Check for Memorial Program section
+      const programCard = page.locator('text=Memorial Program');
+      await expect(programCard).toBeVisible({ timeout: 5000 });
+    }
+  });
+});
+
 test.describe('Admin Dashboard - Responsive Design', () => {
   test('should display properly on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
