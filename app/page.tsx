@@ -248,63 +248,65 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-4 py-16 pt-24 texture-overlay overflow-hidden">
+      <section className="relative min-h-[100dvh] flex flex-col items-center justify-center px-4 py-8 pt-20 sm:py-12 sm:pt-24 md:py-16 texture-overlay overflow-hidden">
         {/* Background Gradient Orbs */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-gold/20 to-transparent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-maroon/10 to-transparent rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+        <div className="absolute top-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-gradient-to-br from-gold/20 to-transparent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-gradient-to-tl from-maroon/10 to-transparent rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center justify-center flex-1">
           {/* Logo Banner */}
-          <div className="mb-6">
+          <div className="mb-3 sm:mb-4 md:mb-6">
             <Image
               src="/logo-banner.png"
               alt="Conference of Grand Masters - Prince Hall Masons - Deceased Member"
               width={600}
               height={300}
-              className="mx-auto w-full max-w-md md:max-w-lg lg:max-w-xl h-auto drop-shadow-lg"
+              className="mx-auto w-full max-w-[280px] sm:max-w-md md:max-w-lg lg:max-w-xl h-auto drop-shadow-lg"
               priority
             />
           </div>
 
           {/* Headline */}
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-maroon mb-4">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-maroon mb-2 sm:mb-3 md:mb-4">
             In Memoriam
           </h1>
 
-          {/* Subheadline */}
-          <p className="font-body text-lg md:text-xl text-charcoal/80 max-w-2xl mx-auto mb-3 leading-relaxed">
+          {/* Subheadline - Hidden on very small screens */}
+          <p className="font-body text-base sm:text-lg md:text-xl text-charcoal/80 max-w-2xl mx-auto mb-2 sm:mb-3 leading-relaxed hidden xs:block sm:block">
             Honoring the legacy of our departed brethren who served with distinction
             in the Conference of Grand Masters, Prince Hall Affiliated.
           </p>
 
-          {/* Decorative Divider */}
-          <div className="divider-ornate max-w-xs mx-auto">
-            <svg viewBox="0 0 24 24" fill="currentColor">
+          {/* Decorative Divider - Smaller on mobile */}
+          <div className="divider-ornate max-w-[200px] sm:max-w-xs mx-auto my-2 sm:my-0">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
               <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z" />
             </svg>
           </div>
 
-          {/* Description */}
-          <p className="font-body text-base text-charcoal/70 max-w-xl mx-auto mb-8">
-            This sacred registry serves to memorialize and honor our Most Worshipful Grand Masters
-            who have been called from labor to eternal rest.
+          {/* Description - Condensed on mobile */}
+          <p className="font-body text-sm sm:text-base text-charcoal/70 max-w-xl mx-auto mb-4 sm:mb-6 md:mb-8 px-2">
+            <span className="hidden sm:inline">This sacred registry serves to memorialize and honor our Most Worshipful Grand Masters
+            who have been called from labor to eternal rest.</span>
+            <span className="sm:hidden">Honor our Most Worshipful Grand Masters called from labor to eternal rest.</span>
           </p>
 
-          {/* CTA Button */}
+          {/* CTA Button - Always visible and prominent */}
           <button
             onClick={scrollToForm}
-            className="btn-primary group"
+            className="btn-primary group text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-3 sm:py-4"
           >
-            <svg className="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Submit Memorial Record
+            <span className="hidden sm:inline">Submit Memorial Record</span>
+            <span className="sm:hidden">Submit Record</span>
           </button>
 
-          {/* Scroll Indicator */}
-          <div className="mt-12 animate-float">
-            <svg className="w-6 h-6 text-gold mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Scroll Indicator - Hidden on very small screens */}
+          <div className="mt-6 sm:mt-8 md:mt-12 animate-float hidden sm:block">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gold mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </div>
