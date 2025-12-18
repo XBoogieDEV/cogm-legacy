@@ -99,6 +99,7 @@ export default function Home() {
   const createSubmission = useMutation(api.submissions.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formStarted, setFormStarted] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
   // Form state - Core required fields
@@ -189,11 +190,13 @@ export default function Home() {
   };
 
   const scrollToForm = () => {
+    setFormStarted(true);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const resetForm = () => {
     setIsSubmitted(false);
+    setFormStarted(false);
     setFormData({
       fullName: "",
       passingDate: "",
@@ -286,17 +289,19 @@ export default function Home() {
             <span className="sm:hidden">Honor our Most Worshipful Grand Masters called from labor to eternal rest.</span>
           </p>
 
-          {/* CTA Button - Always visible and prominent */}
-          <button
-            onClick={scrollToForm}
-            className="btn-primary group text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-3 sm:py-4"
-          >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="hidden sm:inline">Submit Memorial Record</span>
-            <span className="sm:hidden">Submit Record</span>
-          </button>
+          {/* CTA Button - Hidden after clicking */}
+          {!formStarted && (
+            <button
+              onClick={scrollToForm}
+              className="btn-primary group text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-3 sm:py-4"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">Submit Memorial Record</span>
+              <span className="sm:hidden">Submit Record</span>
+            </button>
+          )}
 
           {/* Scroll Indicator - Hidden on very small screens */}
           <div className="mt-6 sm:mt-8 md:mt-12 animate-float hidden sm:block">
