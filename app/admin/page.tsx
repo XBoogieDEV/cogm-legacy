@@ -86,7 +86,7 @@ function FileViewer({
   storageIds: Id<"_storage">[];
   title: string;
   icon: React.ReactNode;
-  onPreview?: (url: string, fileName: string) => void;
+  onPreview?: (url: string, fileName: string, contentType?: string | null) => void;
 }) {
   const fileUrls = useQuery(
     api.files.getFileUrls,
@@ -150,7 +150,7 @@ function FileViewer({
                   <div className="flex gap-1">
                     {onPreview && file.url && (
                       <button
-                        onClick={() => onPreview(file.url!, `File ${index + 1}`)}
+                        onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
                         className="p-1.5 text-gold hover:bg-gold hover:text-white rounded transition-all"
                         title="Preview"
                       >
@@ -251,14 +251,15 @@ function DetailModal({
   const [previewDocument, setPreviewDocument] = useState<{
     url: string;
     fileName: string;
+    contentType?: string | null;
   } | null>(null);
 
   const hasDocuments = submission.obituaryLink ||
     (submission.obituaryFileIds && submission.obituaryFileIds.length > 0) ||
     (submission.programFileIds && submission.programFileIds.length > 0);
 
-  const handlePreview = (url: string, fileName: string) => {
-    setPreviewDocument({ url, fileName });
+  const handlePreview = (url: string, fileName: string, contentType?: string | null) => {
+    setPreviewDocument({ url, fileName, contentType });
   };
 
   return (
@@ -482,6 +483,7 @@ function DetailModal({
       <DocumentPreviewModal
         url={previewDocument.url}
         fileName={previewDocument.fileName}
+        contentType={previewDocument.contentType}
         onClose={() => setPreviewDocument(null)}
       />
     )}
@@ -547,19 +549,32 @@ function DeleteConfirmationDialog({
 function DocumentPreviewModal({
   url,
   fileName,
+  contentType,
   onClose
 }: {
   url: string;
   fileName?: string;
+  contentType?: string | null;
   onClose: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Detect file type from URL or filename
+  // Detect file type from content type or fallback to URL/filename
   const getViewerType = (): 'image' | 'pdf' | 'word' | 'unknown' => {
-    const checkString = (fileName || url).toLowerCase();
+    // First try content type (most reliable)
+    if (contentType) {
+      if (contentType.startsWith('image/')) return 'image';
+      if (contentType === 'application/pdf') return 'pdf';
+      if (contentType.includes('word') ||
+          contentType === 'application/msword' ||
+          contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        return 'word';
+      }
+    }
 
+    // Fallback to filename/URL extension
+    const checkString = (fileName || url).toLowerCase();
     if (/\.(jpg|jpeg|png|gif|webp|bmp)(\?|$)/i.test(checkString)) return 'image';
     if (/\.pdf(\?|$)/i.test(checkString)) return 'pdf';
     if (/\.(doc|docx)(\?|$)/i.test(checkString)) return 'word';

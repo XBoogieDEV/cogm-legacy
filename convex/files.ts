@@ -17,14 +17,19 @@ export const getFileUrl = query({
   },
 });
 
-// Get URLs for multiple stored files
+// Get URLs for multiple stored files with metadata
 export const getFileUrls = query({
   args: { storageIds: v.array(v.id("_storage")) },
   handler: async (ctx, args) => {
     const urls = await Promise.all(
       args.storageIds.map(async (storageId) => {
         const url = await ctx.storage.getUrl(storageId);
-        return { storageId, url };
+        const metadata = await ctx.storage.getMetadata(storageId);
+        return {
+          storageId,
+          url,
+          contentType: metadata?.contentType || null,
+        };
       })
     );
     return urls;
