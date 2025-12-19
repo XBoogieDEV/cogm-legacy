@@ -76,15 +76,17 @@ function StatCard({
   );
 }
 
-// File Viewer Component - displays stored files with download links
+// File Viewer Component - displays stored files with download links and preview
 function FileViewer({
   storageIds,
   title,
-  icon
+  icon,
+  onPreview
 }: {
   storageIds: Id<"_storage">[];
   title: string;
   icon: React.ReactNode;
+  onPreview?: (url: string, fileName: string) => void;
 }) {
   const fileUrls = useQuery(
     api.files.getFileUrls,
@@ -129,28 +131,48 @@ function FileViewer({
               </div>
             ) : (
               fileUrls.map((file, index) => (
-                <a
+                <div
                   key={file.storageId}
-                  href={file.url || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-2.5 bg-white/60 rounded-lg border border-cream-dark hover:border-gold hover:bg-white transition-all group"
+                  className="flex items-center gap-3 p-2.5 bg-white/60 rounded-lg border border-cream-dark"
                 >
-                  <div className="w-8 h-8 rounded bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all">
+                  <div className="w-8 h-8 rounded bg-gold/10 flex items-center justify-center text-gold">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-body text-sm text-charcoal group-hover:text-maroon transition-colors">
+                    <p className="font-body text-sm text-charcoal">
                       File {index + 1}
                     </p>
-                    <p className="font-body text-xs text-charcoal/50">Click to view/download</p>
                   </div>
-                  <svg className="w-4 h-4 text-charcoal/30 group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-1">
+                    {onPreview && file.url && (
+                      <button
+                        onClick={() => onPreview(file.url!, `File ${index + 1}`)}
+                        className="p-1.5 text-gold hover:bg-gold hover:text-white rounded transition-all"
+                        title="Preview"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                    )}
+                    <a
+                      href={file.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 text-charcoal/50 hover:text-gold transition-colors"
+                      title="Download"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
               ))
             )}
           </div>
@@ -218,17 +240,29 @@ function DocumentCard({
 function DetailModal({
   submission,
   onClose,
-  onStatusChange
+  onStatusChange,
+  onDelete
 }: {
   submission: Submission;
   onClose: () => void;
   onStatusChange: (id: Id<"submissions">, status: SubmissionStatus) => void;
+  onDelete: (submission: Submission) => void;
 }) {
+  const [previewDocument, setPreviewDocument] = useState<{
+    url: string;
+    fileName: string;
+  } | null>(null);
+
   const hasDocuments = submission.obituaryLink ||
     (submission.obituaryFileIds && submission.obituaryFileIds.length > 0) ||
     (submission.programFileIds && submission.programFileIds.length > 0);
 
+  const handlePreview = (url: string, fileName: string) => {
+    setPreviewDocument({ url, fileName });
+  };
+
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-charcoal/60 backdrop-blur-sm"
@@ -352,6 +386,7 @@ function DetailModal({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                     </svg>
                   }
+                  onPreview={handlePreview}
                 />
 
                 {/* Uploaded Memorial Program Files */}
@@ -363,6 +398,7 @@ function DetailModal({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   }
+                  onPreview={handlePreview}
                 />
               </div>
             </div>
@@ -427,10 +463,276 @@ function DetailModal({
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-cream-dark/30 border-t border-cream-dark flex justify-end">
+        <div className="px-6 py-4 bg-cream-dark/30 border-t border-cream-dark flex justify-between">
+          <button
+            onClick={() => onDelete(submission)}
+            className="px-4 py-2 text-sm font-body text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            Delete Record
+          </button>
           <button onClick={onClose} className="btn-secondary text-sm py-2 px-4">
             Close
           </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Document Preview Modal */}
+    {previewDocument && (
+      <DocumentPreviewModal
+        url={previewDocument.url}
+        fileName={previewDocument.fileName}
+        onClose={() => setPreviewDocument(null)}
+      />
+    )}
+    </>
+  );
+}
+
+// Delete Confirmation Dialog
+function DeleteConfirmationDialog({
+  submission,
+  onConfirm,
+  onCancel,
+  isDeleting
+}: {
+  submission: Submission;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-charcoal/70 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative bg-dove-white rounded-xl shadow-2xl max-w-md w-full p-6">
+        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+
+        <h3 className="font-display text-xl text-charcoal text-center mb-2">
+          Delete Memorial Record?
+        </h3>
+        <p className="font-body text-charcoal/70 text-center mb-4">
+          Are you sure you want to delete the record for <strong>{submission.fullName}</strong>?
+          This will permanently remove the submission and all associated files.
+        </p>
+        <p className="font-body text-sm text-red-600 text-center mb-6">
+          This action cannot be undone.
+        </p>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="flex-1 btn-secondary py-2 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-body disabled:opacity-50"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Document Preview Modal
+function DocumentPreviewModal({
+  url,
+  fileName,
+  onClose
+}: {
+  url: string;
+  fileName?: string;
+  onClose: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Detect file type from URL or filename
+  const getViewerType = (): 'image' | 'pdf' | 'word' | 'unknown' => {
+    const checkString = (fileName || url).toLowerCase();
+
+    if (/\.(jpg|jpeg|png|gif|webp|bmp)(\?|$)/i.test(checkString)) return 'image';
+    if (/\.pdf(\?|$)/i.test(checkString)) return 'pdf';
+    if (/\.(doc|docx)(\?|$)/i.test(checkString)) return 'word';
+
+    return 'unknown';
+  };
+
+  const viewerType = getViewerType();
+  const googleDocsViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-charcoal/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div className="relative bg-dove-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-cream-dark bg-cream-dark/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white">
+              {viewerType === 'image' && (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              )}
+              {viewerType === 'pdf' && (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              )}
+              {(viewerType === 'word' || viewerType === 'unknown') && (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <h3 className="font-display text-lg text-charcoal">
+                {fileName || 'Document Preview'}
+              </h3>
+              <p className="font-body text-xs text-charcoal/60">
+                {viewerType === 'image' && 'Image'}
+                {viewerType === 'pdf' && 'PDF Document'}
+                {viewerType === 'word' && 'Word Document'}
+                {viewerType === 'unknown' && 'Document'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 text-sm font-body text-gold hover:text-gold-dark transition-colors flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Open in New Tab
+            </a>
+            <button
+              onClick={onClose}
+              className="p-2 text-charcoal/60 hover:text-charcoal transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto bg-charcoal/5 flex items-center justify-center p-4 relative">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-cream/80 z-10">
+              <div className="flex flex-col items-center gap-3">
+                <svg className="w-8 h-8 animate-spin text-gold" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="font-body text-sm text-charcoal/60">Loading document...</span>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center p-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <p className="font-body text-charcoal/70 mb-4">{error}</p>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-sm py-2 px-4"
+              >
+                Download Instead
+              </a>
+            </div>
+          )}
+
+          {viewerType === 'image' && !error && (
+            <img
+              src={url}
+              alt={fileName || 'Document'}
+              className="max-w-full max-h-full object-contain"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setError('Failed to load image');
+              }}
+            />
+          )}
+
+          {viewerType === 'pdf' && !error && (
+            <iframe
+              src={url}
+              className="w-full h-full border-0"
+              title={fileName || 'PDF Document'}
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setError('Failed to load PDF. The document may be inaccessible.');
+              }}
+            />
+          )}
+
+          {viewerType === 'word' && !error && (
+            <div className="w-full h-full flex flex-col">
+              <div className="bg-amber-50 border-b border-amber-200 px-4 py-2">
+                <p className="font-body text-xs text-amber-800">
+                  Word documents are previewed using Google Docs Viewer. If preview fails, use the download link above.
+                </p>
+              </div>
+              <iframe
+                src={googleDocsViewerUrl}
+                className="flex-1 w-full border-0"
+                title={fileName || 'Word Document'}
+                onLoad={() => setIsLoading(false)}
+                onError={() => {
+                  setIsLoading(false);
+                  setError('Failed to load document preview. The document may require download to view.');
+                }}
+              />
+            </div>
+          )}
+
+          {viewerType === 'unknown' && !error && (
+            <div className="text-center p-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cream-dark flex items-center justify-center">
+                <svg className="w-8 h-8 text-charcoal/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p className="font-body text-charcoal/70 mb-4">
+                Preview not available for this file type.
+              </p>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-sm py-2 px-4"
+              >
+                Download File
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -471,6 +773,11 @@ export default function AdminDashboard() {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'jurisdiction'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    submission: Submission | null;
+    isDeleting: boolean;
+  }>({ isOpen: false, submission: null, isDeleting: false });
 
   // Convex queries
   const submissions = useQuery(api.submissions.list, {
@@ -478,6 +785,7 @@ export default function AdminDashboard() {
   });
   const stats = useQuery(api.submissions.getStats, {});
   const updateStatusMutation = useMutation(api.submissions.updateStatus);
+  const removeMutation = useMutation(api.submissions.remove);
 
   // Redirect to login if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -538,6 +846,30 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     await logout();
     router.push('/admin/login');
+  };
+
+  const handleDeleteRequest = (submission: Submission) => {
+    setSelectedSubmission(null);
+    setDeleteConfirmation({ isOpen: true, submission, isDeleting: false });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmation.submission) return;
+
+    setDeleteConfirmation(prev => ({ ...prev, isDeleting: true }));
+
+    try {
+      await removeMutation({ id: deleteConfirmation.submission._id });
+      setDeleteConfirmation({ isOpen: false, submission: null, isDeleting: false });
+    } catch (error) {
+      console.error('Failed to delete submission:', error);
+      alert('Failed to delete submission. Please try again.');
+      setDeleteConfirmation(prev => ({ ...prev, isDeleting: false }));
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmation({ isOpen: false, submission: null, isDeleting: false });
   };
 
   return (
@@ -773,6 +1105,16 @@ export default function AdminDashboard() {
           submission={selectedSubmission}
           onClose={() => setSelectedSubmission(null)}
           onStatusChange={handleStatusChange}
+          onDelete={handleDeleteRequest}
+        />
+      )}
+
+      {deleteConfirmation.isOpen && deleteConfirmation.submission && (
+        <DeleteConfirmationDialog
+          submission={deleteConfirmation.submission}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          isDeleting={deleteConfirmation.isDeleting}
         />
       )}
     </div>

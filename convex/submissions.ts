@@ -101,14 +101,37 @@ export const updateStatus = mutation({
   },
 });
 
-// Admin: Delete a submission
+// Admin: Delete a submission and its associated files
 export const remove = mutation({
   args: {
     id: v.id("submissions"),
   },
   handler: async (ctx, args) => {
+    const submission = await ctx.db.get(args.id);
+    if (!submission) {
+      throw new Error("Submission not found");
+    }
+
+    // Delete associated files from storage
+    const filesToDelete = [
+      ...(submission.obituaryFileIds || []),
+      ...(submission.programFileIds || []),
+    ];
+
+    let filesDeleted = 0;
+    for (const storageId of filesToDelete) {
+      try {
+        await ctx.storage.delete(storageId);
+        filesDeleted++;
+      } catch (error) {
+        // Log but don't fail if file deletion fails
+        console.error(`Failed to delete file ${storageId}:`, error);
+      }
+    }
+
+    // Delete the database record
     await ctx.db.delete(args.id);
-    return { success: true };
+    return { success: true, filesDeleted };
   },
 });
 
