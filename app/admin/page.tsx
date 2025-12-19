@@ -159,13 +159,13 @@ function FileViewer({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-5">
+    <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-6">
       {/* Decorative corner accents */}
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-gold/15 to-transparent" />
       <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-maroon/10 to-transparent" />
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-md">
           {icon}
         </div>
@@ -187,32 +187,33 @@ function FileViewer({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {fileUrls.map((file, index) => (
             <div
               key={file.storageId}
-              className="group relative bg-white rounded-xl border-2 border-cream-dark overflow-hidden transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-1"
+              className="group relative bg-white rounded-xl border-2 border-cream-dark overflow-hidden transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-0.5"
             >
               {/* Card shimmer effect on hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
 
-              {/* File icon area */}
-              <div className="relative pt-6 pb-4 px-4 flex flex-col items-center justify-center bg-gradient-to-b from-cream/50 to-white">
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center">
-                  <span className="font-display text-xs text-gold font-bold">{index + 1}</span>
+              {/* Horizontal layout: icon on left, buttons on right */}
+              <div className="relative flex items-center gap-4 p-4">
+                {/* File icon area */}
+                <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-gradient-to-b from-cream/80 to-cream-dark/30 flex items-center justify-center relative">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gold/20 flex items-center justify-center">
+                    <span className="font-display text-[10px] text-gold font-bold">{index + 1}</span>
+                  </div>
+                  <FileTypeIcon contentType={file.contentType} />
                 </div>
-                <FileTypeIcon contentType={file.contentType} />
-              </div>
 
-              {/* Action buttons */}
-              <div className="p-2 bg-cream-dark/20 border-t border-cream-dark">
-                <div className="flex gap-2">
+                {/* Action buttons - horizontal layout */}
+                <div className="flex-1 flex gap-3">
                   {onPreview && file.url && (
                     <button
                       onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gradient-to-r from-maroon to-maroon-dark text-white text-xs font-body font-medium rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-maroon/30 hover:scale-[1.02] active:scale-[0.98]"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-maroon to-maroon-dark text-white text-sm font-body font-medium rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-maroon/30 hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -223,9 +224,9 @@ function FileViewer({
                     href={file.url || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gold/10 text-gold text-xs font-body font-medium rounded-lg border border-gold/30 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold hover:shadow-md hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gold/10 text-gold text-sm font-body font-medium rounded-lg border border-gold/30 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold hover:shadow-md hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     Download
@@ -346,8 +347,8 @@ function DetailModal({
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
-          <div className="grid gap-6">
+        <div className="px-6 py-5 overflow-y-auto max-h-[65vh]">
+          <div className="grid gap-7">
             <div className="flex items-center justify-between pb-4 border-b border-cream-dark">
               <div className="flex items-center gap-3">
                 <span className="font-body text-sm text-charcoal/60">Status:</span>
@@ -413,7 +414,7 @@ function DetailModal({
 
             {/* Enhanced Documents Section */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-5">
                 <h3 className="font-display text-lg text-maroon">Supporting Documents</h3>
                 {hasDocuments && (
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-white text-xs font-bold">
@@ -424,7 +425,7 @@ function DetailModal({
                 )}
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-4">
                 {/* Obituary Link */}
                 <DocumentCard
                   title="Obituary Link"
