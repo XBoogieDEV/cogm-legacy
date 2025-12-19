@@ -76,51 +76,77 @@ function StatCard({
   );
 }
 
-// File type icon component with dynamic styling
-function FileTypeIcon({ contentType, className = "" }: { contentType?: string | null; className?: string }) {
+// Large file type thumbnail component for square cards
+function FileThumbnail({
+  contentType,
+  url,
+  className = ""
+}: {
+  contentType?: string | null;
+  url?: string | null;
+  className?: string;
+}) {
   const isPDF = contentType === 'application/pdf';
   const isWord = contentType?.includes('word') || contentType?.includes('document');
   const isImage = contentType?.startsWith('image/');
 
+  // For images, show actual thumbnail
+  if (isImage && url) {
+    return (
+      <div className={`relative w-full h-full overflow-hidden ${className}`}>
+        <img
+          src={url}
+          alt="Document preview"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+    );
+  }
+
+  // PDF thumbnail
   if (isPDF) {
     return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13a1 1 0 011-1h1a1 1 0 011 1v3a1 1 0 01-1 1h-1a1 1 0 01-1-1v-3zm5 0a1 1 0 011-1h.5a1.5 1.5 0 010 3H15v1a1 1 0 01-2 0v-3z"/>
-        </svg>
-        <span className="text-[10px] font-bold text-red-500 mt-1 tracking-wider">PDF</span>
+      <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100 ${className}`}>
+        <div className="relative">
+          <svg className="w-16 h-16 text-red-500 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/>
+          </svg>
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+            PDF
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Word document thumbnail
   if (isWord) {
     return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM7 13h2l1.5 4.5L12 13h2l-2.5 7h-2L7 13z"/>
-        </svg>
-        <span className="text-[10px] font-bold text-blue-600 mt-1 tracking-wider">DOC</span>
+      <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 ${className}`}>
+        <div className="relative">
+          <svg className="w-16 h-16 text-blue-600 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/>
+          </svg>
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+            DOC
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (isImage) {
-    return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <span className="text-[10px] font-bold text-emerald-500 mt-1 tracking-wider">IMG</span>
-      </div>
-    );
-  }
-
+  // Generic file thumbnail
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
-      <svg className="w-10 h-10 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <span className="text-[10px] font-bold text-gold mt-1 tracking-wider">FILE</span>
+    <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100 ${className}`}>
+      <div className="relative">
+        <svg className="w-16 h-16 text-amber-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+          FILE
+        </div>
+      </div>
     </div>
   );
 }
@@ -146,7 +172,7 @@ function FileViewer({
     return (
       <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+          <div className="w-12 h-12 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
             {icon}
           </div>
           <div className="flex-1">
@@ -159,63 +185,78 @@ function FileViewer({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-6">
+    <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-5">
       {/* Decorative corner accents */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-gold/15 to-transparent" />
-      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-maroon/10 to-transparent" />
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gold/10 to-transparent" />
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-md">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-sm">
           {icon}
         </div>
         <div>
-          <p className="font-display text-base text-charcoal">{title}</p>
-          <p className="font-body text-xs text-charcoal/50">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
+          <p className="font-display text-sm text-charcoal">{title}</p>
+          <p className="font-body text-[11px] text-charcoal/50">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
-      {/* File Cards Grid */}
+      {/* File Cards Grid - Square cards side by side */}
       {fileUrls === undefined ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="flex flex-col items-center gap-3">
-            <svg className="w-8 h-8 animate-spin text-gold" viewBox="0 0 24 24">
+        <div className="flex items-center justify-center py-6">
+          <div className="flex flex-col items-center gap-2">
+            <svg className="w-6 h-6 animate-spin text-gold" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            <span className="font-body text-sm text-charcoal/50">Loading files...</span>
+            <span className="font-body text-xs text-charcoal/50">Loading...</span>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {fileUrls.map((file, index) => (
             <div
               key={file.storageId}
-              className="group relative bg-white rounded-xl border-2 border-cream-dark overflow-hidden transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-0.5"
+              className="group relative bg-white rounded-lg border border-cream-dark overflow-hidden shadow-sm transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/15 hover:-translate-y-1"
             >
-              {/* Card shimmer effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
+              {/* File number badge */}
+              <div className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-maroon/90 backdrop-blur-sm flex items-center justify-center shadow-md">
+                <span className="font-display text-[10px] text-white font-bold">{index + 1}</span>
+              </div>
 
-              {/* Horizontal layout: icon on left, buttons on right */}
-              <div className="relative flex items-center gap-4 p-4">
-                {/* File icon area */}
-                <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-gradient-to-b from-cream/80 to-cream-dark/30 flex items-center justify-center relative">
-                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gold/20 flex items-center justify-center">
-                    <span className="font-display text-[10px] text-gold font-bold">{index + 1}</span>
-                  </div>
-                  <FileTypeIcon contentType={file.contentType} />
-                </div>
-
-                {/* Action buttons - horizontal layout */}
-                <div className="flex-1 flex gap-3">
+              {/* Thumbnail area - square aspect ratio */}
+              <div className="aspect-square relative overflow-hidden">
+                <FileThumbnail
+                  contentType={file.contentType}
+                  url={file.url}
+                  className="w-full h-full"
+                />
+                {/* Hover overlay with quick actions */}
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-3">
                   {onPreview && file.url && (
                     <button
                       onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-maroon to-maroon-dark text-white text-sm font-body font-medium rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-maroon/30 hover:scale-[1.02] active:scale-[0.98]"
+                      className="px-3 py-1.5 bg-white/95 text-charcoal text-xs font-body font-medium rounded-full shadow-lg transition-all duration-200 hover:bg-white hover:scale-105 flex items-center gap-1.5"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons row */}
+              <div className="p-2 bg-cream-dark/30 border-t border-cream-dark/50">
+                <div className="flex gap-1.5">
+                  {onPreview && file.url && (
+                    <button
+                      onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 bg-maroon text-white text-[11px] font-body font-medium rounded transition-all duration-200 hover:bg-maroon-dark active:scale-[0.98]"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       Preview
                     </button>
@@ -224,9 +265,9 @@ function FileViewer({
                     href={file.url || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gold/10 text-gold text-sm font-body font-medium rounded-lg border border-gold/30 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold hover:shadow-md hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 bg-gold/20 text-gold-dark text-[11px] font-body font-medium rounded border border-gold/40 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold active:scale-[0.98]"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     Download
