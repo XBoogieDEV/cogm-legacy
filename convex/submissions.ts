@@ -112,6 +112,18 @@ export const remove = mutation({
   },
 });
 
+// Admin: Clear all submissions (for testing)
+export const clearAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const submissions = await ctx.db.query("submissions").collect();
+    for (const submission of submissions) {
+      await ctx.db.delete(submission._id);
+    }
+    return { deleted: submissions.length };
+  },
+});
+
 // Admin: Get dashboard stats
 export const getStats = query({
   args: {},
