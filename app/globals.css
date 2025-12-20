@@ -221,7 +221,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Elegant Input Styles */
 .elegant-input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-family: var(--font-body), 'Helvetica Neue', sans-serif;
   font-size: 1rem;
   background: #FDFCFA;
