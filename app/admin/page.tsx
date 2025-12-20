@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Doc, Id } from "../../convex/_generated/dataModel";
 import { useAuth } from "../providers/AuthProvider";
+import { ExportButtons } from "./ExportButtons";
 
 type Submission = Doc<"submissions">;
 type SubmissionStatus = "pending" | "reviewed" | "published";
@@ -1206,6 +1207,11 @@ export default function AdminDashboard() {
                   <option value="reviewed">Reviewed</option>
                   <option value="published">Published</option>
                 </select>
+                <ExportButtons
+                  submissions={filteredSubmissions}
+                  statusFilter={statusFilter}
+                  isLoading={!submissions}
+                />
               </div>
             </div>
           </div>
