@@ -1194,13 +1194,13 @@ export default function AdminDashboard() {
                     placeholder="Search by name, jurisdiction..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="elegant-input pl-10 py-2 text-sm w-full sm:w-64"
+                    className="elegant-input pl-10 py-2 text-sm w-full sm:w-72 sm:min-w-[200px]"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                  className="elegant-input elegant-select py-2 text-sm w-full sm:w-40"
+                  className="elegant-input elegant-select py-2 text-sm w-full sm:w-32"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
