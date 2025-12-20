@@ -1194,7 +1194,8 @@ export default function AdminDashboard() {
                     placeholder="Search by name, jurisdiction..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="elegant-input pl-11 py-2 text-sm w-full sm:w-80 sm:min-w-[280px]"
+                    className="elegant-input py-2 text-sm w-full sm:w-80 sm:min-w-[280px]"
+                    style={{ paddingLeft: '2.75rem' }}
                   />
                 </div>
                 <select
