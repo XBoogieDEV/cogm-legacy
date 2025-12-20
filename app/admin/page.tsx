@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Doc, Id } from "../../convex/_generated/dataModel";
 import { useAuth } from "../providers/AuthProvider";
+import { ExportButtons } from "./ExportButtons";
 
 type Submission = Doc<"submissions">;
 type SubmissionStatus = "pending" | "reviewed" | "published";
@@ -76,51 +77,200 @@ function StatCard({
   );
 }
 
-// File type icon component with dynamic styling
-function FileTypeIcon({ contentType, className = "" }: { contentType?: string | null; className?: string }) {
+// Large file type thumbnail component for square cards
+function FileThumbnail({
+  contentType,
+  url,
+  className = ""
+}: {
+  contentType?: string | null;
+  url?: string | null;
+  className?: string;
+}) {
   const isPDF = contentType === 'application/pdf';
   const isWord = contentType?.includes('word') || contentType?.includes('document');
   const isImage = contentType?.startsWith('image/');
 
+  // For images, show actual thumbnail
+  if (isImage && url) {
+    return (
+      <div className={`relative w-full h-full overflow-hidden ${className}`}>
+        <img
+          src={url}
+          alt="Document preview"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+    );
+  }
+
+  // PDF thumbnail
   if (isPDF) {
     return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13a1 1 0 011-1h1a1 1 0 011 1v3a1 1 0 01-1 1h-1a1 1 0 01-1-1v-3zm5 0a1 1 0 011-1h.5a1.5 1.5 0 010 3H15v1a1 1 0 01-2 0v-3z"/>
-        </svg>
-        <span className="text-[10px] font-bold text-red-500 mt-1 tracking-wider">PDF</span>
+      <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100 ${className}`}>
+        <div className="relative">
+          <svg className="w-16 h-16 text-red-500 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/>
+          </svg>
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+            PDF
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Word document thumbnail
   if (isWord) {
     return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM7 13h2l1.5 4.5L12 13h2l-2.5 7h-2L7 13z"/>
-        </svg>
-        <span className="text-[10px] font-bold text-blue-600 mt-1 tracking-wider">DOC</span>
+      <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 ${className}`}>
+        <div className="relative">
+          <svg className="w-16 h-16 text-blue-600 drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/>
+          </svg>
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+            DOC
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (isImage) {
-    return (
-      <div className={`flex flex-col items-center justify-center ${className}`}>
-        <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  // Generic file thumbnail
+  return (
+    <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100 ${className}`}>
+      <div className="relative">
+        <svg className="w-16 h-16 text-amber-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <span className="text-[10px] font-bold text-emerald-500 mt-1 tracking-wider">IMG</span>
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+          FILE
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Single Document File Card - displays one document as a square card
+function DocumentFileCard({
+  storageIds,
+  title,
+  onPreview
+}: {
+  storageIds: Id<"_storage">[];
+  title: string;
+  onPreview?: (url: string, fileName: string, contentType?: string | null) => void;
+}) {
+  const fileUrls = useQuery(
+    api.files.getFileUrls,
+    storageIds.length > 0 ? { storageIds } : "skip"
+  );
+
+  // Empty state
+  if (storageIds.length === 0) {
+    return (
+      <div className="relative bg-cream-dark/20 rounded-xl border-2 border-dashed border-cream-dark overflow-hidden">
+        <div className="aspect-square flex flex-col items-center justify-center p-4">
+          <svg className="w-12 h-12 text-charcoal/20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p className="font-display text-sm text-charcoal/40 text-center">{title}</p>
+          <p className="font-body text-xs text-charcoal/30 mt-1">No file uploaded</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (fileUrls === undefined) {
+    return (
+      <div className="relative bg-white rounded-xl border border-cream-dark overflow-hidden shadow-sm">
+        <div className="aspect-square flex flex-col items-center justify-center">
+          <svg className="w-8 h-8 animate-spin text-gold" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  // Get the first file (primary document)
+  const file = fileUrls[0];
+  if (!file) {
+    return (
+      <div className="relative bg-cream-dark/20 rounded-xl border-2 border-dashed border-cream-dark overflow-hidden">
+        <div className="aspect-square flex flex-col items-center justify-center p-4">
+          <svg className="w-12 h-12 text-charcoal/20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p className="font-display text-sm text-charcoal/40 text-center">{title}</p>
+          <p className="font-body text-xs text-charcoal/30 mt-1">No file uploaded</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
-      <svg className="w-10 h-10 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <span className="text-[10px] font-bold text-gold mt-1 tracking-wider">FILE</span>
+    <div className="group relative bg-white rounded-xl border border-cream-dark overflow-hidden shadow-sm transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/15 hover:-translate-y-1">
+      {/* Thumbnail area - square */}
+      <div className="aspect-square relative overflow-hidden">
+        <FileThumbnail
+          contentType={file.contentType}
+          url={file.url}
+          className="w-full h-full"
+        />
+
+        {/* Title overlay at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal/70 to-transparent p-3 pt-8">
+          <p className="font-display text-sm text-white truncate">{title}</p>
+        </div>
+
+        {/* Hover overlay with quick view */}
+        <div className="absolute inset-0 bg-charcoal/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+          {onPreview && file.url && (
+            <button
+              onClick={() => onPreview(file.url!, title, file.contentType)}
+              className="px-4 py-2 bg-white text-charcoal text-sm font-body font-medium rounded-lg shadow-lg transition-all duration-200 hover:bg-cream hover:scale-105 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="p-2 bg-cream-dark/30 border-t border-cream-dark/50">
+        <div className="flex gap-2">
+          {onPreview && file.url && (
+            <button
+              onClick={() => onPreview(file.url!, title, file.contentType)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-maroon text-white text-xs font-body font-medium rounded-lg transition-all duration-200 hover:bg-maroon-dark active:scale-[0.98]"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Preview
+            </button>
+          )}
+          <a
+            href={file.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gold/20 text-gold-dark text-xs font-body font-medium rounded-lg border border-gold/40 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold active:scale-[0.98]"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
@@ -146,7 +296,7 @@ function FileViewer({
     return (
       <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+          <div className="w-12 h-12 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
             {icon}
           </div>
           <div className="flex-1">
@@ -161,29 +311,28 @@ function FileViewer({
   return (
     <div className="relative overflow-hidden rounded-xl border-2 border-gold/30 bg-gradient-to-br from-cream to-cream-dark/30 p-5">
       {/* Decorative corner accents */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-gold/15 to-transparent" />
-      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-maroon/10 to-transparent" />
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gold/10 to-transparent" />
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-md">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-maroon to-maroon-dark flex items-center justify-center text-white shadow-sm">
           {icon}
         </div>
         <div>
-          <p className="font-display text-base text-charcoal">{title}</p>
-          <p className="font-body text-xs text-charcoal/50">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
+          <p className="font-display text-sm text-charcoal">{title}</p>
+          <p className="font-body text-[11px] text-charcoal/50">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
-      {/* File Cards Grid */}
+      {/* File Cards Grid - Square cards side by side */}
       {fileUrls === undefined ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="flex flex-col items-center gap-3">
-            <svg className="w-8 h-8 animate-spin text-gold" viewBox="0 0 24 24">
+        <div className="flex items-center justify-center py-6">
+          <div className="flex flex-col items-center gap-2">
+            <svg className="w-6 h-6 animate-spin text-gold" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            <span className="font-body text-sm text-charcoal/50">Loading files...</span>
+            <span className="font-body text-xs text-charcoal/50">Loading...</span>
           </div>
         </div>
       ) : (
@@ -191,30 +340,47 @@ function FileViewer({
           {fileUrls.map((file, index) => (
             <div
               key={file.storageId}
-              className="group relative bg-white rounded-xl border-2 border-cream-dark overflow-hidden transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-1"
+              className="group relative bg-white rounded-lg border border-cream-dark overflow-hidden shadow-sm transition-all duration-300 hover:border-gold hover:shadow-lg hover:shadow-gold/15 hover:-translate-y-1"
             >
-              {/* Card shimmer effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
-
-              {/* File icon area */}
-              <div className="relative pt-6 pb-4 px-4 flex flex-col items-center justify-center bg-gradient-to-b from-cream/50 to-white">
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center">
-                  <span className="font-display text-xs text-gold font-bold">{index + 1}</span>
-                </div>
-                <FileTypeIcon contentType={file.contentType} />
+              {/* File number badge */}
+              <div className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-maroon/90 backdrop-blur-sm flex items-center justify-center shadow-md">
+                <span className="font-display text-[10px] text-white font-bold">{index + 1}</span>
               </div>
 
-              {/* Action buttons */}
-              <div className="p-2 bg-cream-dark/20 border-t border-cream-dark">
-                <div className="flex gap-2">
+              {/* Thumbnail area - square aspect ratio */}
+              <div className="aspect-square relative overflow-hidden">
+                <FileThumbnail
+                  contentType={file.contentType}
+                  url={file.url}
+                  className="w-full h-full"
+                />
+                {/* Hover overlay with quick actions */}
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-3">
                   {onPreview && file.url && (
                     <button
                       onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gradient-to-r from-maroon to-maroon-dark text-white text-xs font-body font-medium rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-maroon/30 hover:scale-[1.02] active:scale-[0.98]"
+                      className="px-3 py-1.5 bg-white/95 text-charcoal text-xs font-body font-medium rounded-full shadow-lg transition-all duration-200 hover:bg-white hover:scale-105 flex items-center gap-1.5"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons row */}
+              <div className="p-2 bg-cream-dark/30 border-t border-cream-dark/50">
+                <div className="flex gap-1.5">
+                  {onPreview && file.url && (
+                    <button
+                      onClick={() => onPreview(file.url!, `File ${index + 1}`, file.contentType)}
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 bg-maroon text-white text-[11px] font-body font-medium rounded transition-all duration-200 hover:bg-maroon-dark active:scale-[0.98]"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       Preview
                     </button>
@@ -223,9 +389,9 @@ function FileViewer({
                     href={file.url || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-gold/10 text-gold text-xs font-body font-medium rounded-lg border border-gold/30 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold hover:shadow-md hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 bg-gold/20 text-gold-dark text-[11px] font-body font-medium rounded border border-gold/40 transition-all duration-200 hover:bg-gold hover:text-white hover:border-gold active:scale-[0.98]"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     Download
@@ -346,8 +512,8 @@ function DetailModal({
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
-          <div className="grid gap-6">
+        <div className="px-6 py-5 overflow-y-auto max-h-[65vh]">
+          <div className="grid gap-7">
             <div className="flex items-center justify-between pb-4 border-b border-cream-dark">
               <div className="flex items-center gap-3">
                 <span className="font-body text-sm text-charcoal/60">Status:</span>
@@ -415,48 +581,41 @@ function DetailModal({
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <h3 className="font-display text-lg text-maroon">Supporting Documents</h3>
-                {hasDocuments && (
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-white text-xs font-bold">
-                    {(submission.obituaryLink ? 1 : 0) +
-                     (submission.obituaryFileIds?.length || 0) +
-                     (submission.programFileIds?.length || 0)}
-                  </span>
-                )}
               </div>
 
-              <div className="grid gap-3">
-                {/* Obituary Link */}
-                <DocumentCard
-                  title="Obituary Link"
-                  link={submission.obituaryLink}
-                  icon={
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              {/* Obituary Link - kept as hyperlink */}
+              {submission.obituaryLink && (
+                <div className="mb-4">
+                  <a
+                    href={submission.obituaryLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-gold hover:text-gold-dark transition-colors font-body text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
-                  }
-                />
+                    View Obituary Link
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              )}
 
-                {/* Uploaded Obituary Files */}
-                <FileViewer
+              {/* Two document cards side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Obituary Document Card */}
+                <DocumentFileCard
                   storageIds={submission.obituaryFileIds || []}
-                  title="Obituary Documents"
-                  icon={
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                    </svg>
-                  }
+                  title="Obituary"
                   onPreview={handlePreview}
                 />
 
-                {/* Uploaded Memorial Program Files */}
-                <FileViewer
+                {/* Memorial Program Card */}
+                <DocumentFileCard
                   storageIds={submission.programFileIds || []}
                   title="Memorial Program"
-                  icon={
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  }
                   onPreview={handlePreview}
                 />
               </div>
@@ -1027,7 +1186,7 @@ export default function AdminDashboard() {
               <h2 className="font-display text-xl text-maroon">Memorial Submissions</h2>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <div className="relative">
-                  <svg className="w-5 h-5 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   <input
@@ -1035,19 +1194,25 @@ export default function AdminDashboard() {
                     placeholder="Search by name, jurisdiction..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="elegant-input pl-10 py-2 text-sm w-full sm:w-64"
+                    className="elegant-input py-2 text-sm w-full sm:w-80 sm:min-w-[280px]"
+                    style={{ paddingLeft: '2.75rem' }}
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                  className="elegant-input elegant-select py-2 text-sm w-full sm:w-40"
+                  className="elegant-input elegant-select py-2 text-sm w-full sm:w-32"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="reviewed">Reviewed</option>
                   <option value="published">Published</option>
                 </select>
+                <ExportButtons
+                  submissions={filteredSubmissions}
+                  statusFilter={statusFilter}
+                  isLoading={!submissions}
+                />
               </div>
             </div>
           </div>
