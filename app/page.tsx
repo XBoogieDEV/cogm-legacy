@@ -115,7 +115,7 @@ function SectionHeader({ number, title, subtitle }: { number: number; title: str
       </div>
       <div>
         <h3 className="font-display text-xl text-maroon font-medium">{title}</h3>
-        {subtitle && <p className="font-body text-sm text-charcoal/60 mt-0.5">{subtitle}</p>}
+        {subtitle && <p className="font-body text-sm text-charcoal/75 mt-0.5">{subtitle}</p>}
       </div>
     </div>
   );
@@ -493,7 +493,7 @@ export default function Home() {
               {/* Progress Indicator */}
               <div className="px-6 md:px-10 pt-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-body text-sm text-charcoal/60">Form Progress</span>
+                  <span className="font-body text-sm text-charcoal/75">Form Progress</span>
                   <span className="font-display text-sm text-maroon font-medium">{completionPercent}%</span>
                 </div>
                 <div className="h-2 bg-cream-dark rounded-full overflow-hidden">
@@ -550,7 +550,7 @@ export default function Home() {
                         required
                         className="elegant-input"
                       />
-                      <p className="text-xs text-charcoal/50 mt-1 font-body">Include suffix if applicable (Sr., Jr., II, III)</p>
+                      <p className="text-xs text-charcoal/75 mt-1 font-body">Include suffix if applicable (Sr., Jr., II, III)</p>
                     </div>
 
                     {/* Passing Date */}
@@ -607,14 +607,14 @@ export default function Home() {
                           required
                           className="elegant-input"
                         />
-                        <p className="text-xs text-charcoal/50 mt-1 font-body">Year range as Grand Master</p>
+                        <p className="text-xs text-charcoal/75 mt-1 font-body">Year range as Grand Master</p>
                       </div>
                     </div>
 
                     {/* Cause of Death - Optional */}
                     <div>
                       <label htmlFor="causeOfDeath" className="form-label">
-                        Cause of Death <span className="text-charcoal/40 text-sm font-normal">(Optional)</span>
+                        Cause of Death <span className="text-charcoal/75 text-sm font-normal">(Optional)</span>
                       </label>
                       <input
                         type="text"
@@ -641,7 +641,7 @@ export default function Home() {
                     {/* Obituary Link */}
                     <div>
                       <label htmlFor="obituaryLink" className="form-label">
-                        Obituary Link <span className="text-charcoal/40 text-sm font-normal">(Optional)</span>
+                        Obituary Link <span className="text-charcoal/75 text-sm font-normal">(Optional)</span>
                       </label>
                       <input
                         type="url"
@@ -677,10 +677,10 @@ export default function Home() {
                           <svg className="w-10 h-10 text-gold/60 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="font-body text-sm text-charcoal/60">
-                            Drag & drop or <span className="text-gold font-medium cursor-pointer hover:underline">browse</span>
+                          <p className="font-body text-sm text-charcoal/75">
+                            Drag & drop or <span className="text-maroon font-medium cursor-pointer hover:underline">browse</span>
                           </p>
-                          <p className="font-body text-xs text-charcoal/40 mt-1">PDF, DOC, or images (max 5)</p>
+                          <p className="font-body text-xs text-charcoal/75 mt-1">PDF, DOC, or images (max 5)</p>
                         </div>
                         {obituaryFiles.length > 0 && (
                           <div className="mt-4 flex flex-wrap gap-4">
@@ -716,10 +716,10 @@ export default function Home() {
                           <svg className="w-10 h-10 text-gold/60 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="font-body text-sm text-charcoal/60">
-                            Drag & drop or <span className="text-gold font-medium cursor-pointer hover:underline">browse</span>
+                          <p className="font-body text-sm text-charcoal/75">
+                            Drag & drop or <span className="text-maroon font-medium cursor-pointer hover:underline">browse</span>
                           </p>
-                          <p className="font-body text-xs text-charcoal/40 mt-1">PDF, DOC, or images (max 5)</p>
+                          <p className="font-body text-xs text-charcoal/75 mt-1">PDF, DOC, or images (max 5)</p>
                         </div>
                         {programFiles.length > 0 && (
                           <div className="mt-4 flex flex-wrap gap-4">
@@ -880,7 +880,7 @@ export default function Home() {
               {/* Form Footer */}
               <div className="px-6 md:px-10 py-5 bg-cream-dark/30 border-t border-gold/20">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <p className="font-body text-sm text-charcoal/60">
+                  <p className="font-body text-sm text-charcoal/75">
                     <span className="text-maroon">*</span> Required fields
                   </p>
                   <button
@@ -921,7 +921,7 @@ export default function Home() {
           <p className="font-body text-sm">
             Prince Hall Masons &bull; Organized 1887
           </p>
-          <p className="font-body text-xs mt-4 text-dove-white/50">
+          <p className="font-body text-xs mt-4 text-dove-white/70">
             &copy; {new Date().getFullYear()} COGM. All rights reserved.
           </p>
         </div>
