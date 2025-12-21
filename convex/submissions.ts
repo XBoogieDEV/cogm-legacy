@@ -55,9 +55,12 @@ export const list = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("submissions").order("desc");
-
-    const submissions = await query.collect();
+    // Use indexed query for better reactivity
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_submittedAt")
+      .order("desc")
+      .collect();
 
     // Apply filters in memory (for simplicity)
     let filtered = submissions;
@@ -182,7 +185,11 @@ export const clearAll = mutation({
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
-    const submissions = await ctx.db.query("submissions").collect();
+    // Use indexed query for better reactivity
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_submittedAt")
+      .collect();
 
     const total = submissions.length;
     const pending = submissions.filter((s) => s.status === "pending").length;
