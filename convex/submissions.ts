@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 // Public: Create a new submission (no auth required)
 export const create = mutation({
@@ -19,10 +20,27 @@ export const create = mutation({
     submitterEmail: v.string(),
   },
   handler: async (ctx, args) => {
+    const submittedAt = Date.now();
     const submissionId = await ctx.db.insert("submissions", {
       ...args,
-      submittedAt: Date.now(),
+      submittedAt,
       status: "pending",
+    });
+
+    // Send email notifications asynchronously
+    await ctx.scheduler.runAfter(0, internal.emails.sendAdminNotification, {
+      submissionId: submissionId,
+      fullName: args.fullName,
+      jurisdiction: args.jurisdiction,
+      submitterName: args.submitterName,
+      submitterEmail: args.submitterEmail,
+      submittedAt,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.emails.sendSubmitterConfirmation, {
+      fullName: args.fullName,
+      submitterName: args.submitterName,
+      submitterEmail: args.submitterEmail,
     });
 
     return { submissionId };
@@ -90,12 +108,25 @@ export const updateStatus = mutation({
       throw new Error("Submission not found");
     }
 
+    const previousStatus = submission.status;
+
     await ctx.db.patch(args.id, {
       status: args.status,
       reviewedBy: args.reviewerId,
       reviewedAt: Date.now(),
       notes: args.notes,
     });
+
+    // Send status notification if status changed to reviewed or published
+    if (previousStatus !== args.status && (args.status === "reviewed" || args.status === "published")) {
+      await ctx.scheduler.runAfter(0, internal.emails.sendStatusNotification, {
+        fullName: submission.fullName,
+        submitterName: submission.submitterName,
+        submitterEmail: submission.submitterEmail,
+        newStatus: args.status,
+        notes: args.notes,
+      });
+    }
 
     return { success: true };
   },
