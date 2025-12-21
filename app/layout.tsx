@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lato } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { ConvexClientProvider } from "./providers/ConvexProvider";
 import { AuthProvider } from "./providers/AuthProvider";
@@ -39,6 +40,7 @@ export default function RootLayout({
             {children}
           </AuthProvider>
         </ConvexClientProvider>
+        <Analytics />
       </body>
     </html>
   );
