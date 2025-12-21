@@ -53,7 +53,7 @@ export default function AdminLogin() {
           <h1 className="font-display text-3xl text-charcoal mt-4">
             Admin Login
           </h1>
-          <p className="font-body text-charcoal/60 mt-2">
+          <p className="font-body text-charcoal/75 mt-2">
             Sign in to access the admin dashboard
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function AdminLogin() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="font-body text-sm text-charcoal/60 hover:text-maroon transition-colors"
+            className="font-body text-sm text-charcoal/75 hover:text-maroon transition-colors"
           >
             &larr; Back to Memorial Form
           </Link>
