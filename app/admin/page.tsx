@@ -58,10 +58,10 @@ function StatCard({
     <div className="memorial-card p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between">
         <div>
-          <p className="font-body text-sm text-charcoal/60 mb-1">{title}</p>
+          <p className="font-body text-sm text-charcoal/75 mb-1">{title}</p>
           <p className="font-display text-3xl text-charcoal font-semibold">{value}</p>
           {trend && (
-            <p className="font-body text-xs text-charcoal/50 mt-2">
+            <p className="font-body text-xs text-charcoal/75 mt-2">
               <span className={trend.value >= 0 ? 'text-emerald-600' : 'text-red-600'}>
                 {trend.value >= 0 ? '+' : ''}{trend.value}
               </span>
@@ -175,8 +175,8 @@ function DocumentFileCard({
           <svg className="w-12 h-12 text-charcoal/20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p className="font-display text-sm text-charcoal/40 text-center">{title}</p>
-          <p className="font-body text-xs text-charcoal/30 mt-1">No file uploaded</p>
+          <p className="font-display text-sm text-charcoal/75 text-center">{title}</p>
+          <p className="font-body text-xs text-charcoal/60 mt-1">No file uploaded</p>
         </div>
       </div>
     );
@@ -205,8 +205,8 @@ function DocumentFileCard({
           <svg className="w-12 h-12 text-charcoal/20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p className="font-display text-sm text-charcoal/40 text-center">{title}</p>
-          <p className="font-body text-xs text-charcoal/30 mt-1">No file uploaded</p>
+          <p className="font-display text-sm text-charcoal/75 text-center">{title}</p>
+          <p className="font-body text-xs text-charcoal/60 mt-1">No file uploaded</p>
         </div>
       </div>
     );
@@ -296,12 +296,12 @@ function FileViewer({
     return (
       <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+          <div className="w-12 h-12 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/50">
             {icon}
           </div>
           <div className="flex-1">
-            <p className="font-display text-sm text-charcoal/40">{title}</p>
-            <p className="font-body text-xs text-charcoal/30 mt-0.5">No files uploaded</p>
+            <p className="font-display text-sm text-charcoal/75">{title}</p>
+            <p className="font-body text-xs text-charcoal/60 mt-0.5">No files uploaded</p>
           </div>
         </div>
       </div>
@@ -320,7 +320,7 @@ function FileViewer({
         </div>
         <div>
           <p className="font-display text-sm text-charcoal">{title}</p>
-          <p className="font-body text-[11px] text-charcoal/50">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
+          <p className="font-body text-[11px] text-charcoal/75">{storageIds.length} file{storageIds.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -332,7 +332,7 @@ function FileViewer({
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            <span className="font-body text-xs text-charcoal/50">Loading...</span>
+            <span className="font-body text-xs text-charcoal/75">Loading...</span>
           </div>
         </div>
       ) : (
@@ -420,12 +420,12 @@ function DocumentCard({
     return (
       <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-cream-dark bg-cream/30 p-5">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/30">
+          <div className="w-14 h-14 rounded-lg bg-cream-dark/50 flex items-center justify-center text-charcoal/50">
             {icon}
           </div>
           <div className="flex-1">
-            <p className="font-display text-sm text-charcoal/40">{title}</p>
-            <p className="font-body text-xs text-charcoal/30 mt-0.5">Not provided</p>
+            <p className="font-display text-sm text-charcoal/75">{title}</p>
+            <p className="font-body text-xs text-charcoal/60 mt-0.5">Not provided</p>
           </div>
         </div>
       </div>
@@ -448,7 +448,7 @@ function DocumentCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-display text-base text-charcoal group-hover:text-maroon transition-colors">{title}</p>
-          <p className="font-body text-xs text-charcoal/60 mt-0.5 truncate">Click to view document</p>
+          <p className="font-body text-xs text-charcoal/75 mt-0.5 truncate">Click to view document</p>
         </div>
         <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,7 +498,7 @@ function DetailModal({
         <div className="bg-gradient-to-r from-maroon to-maroon-dark px-6 py-4">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-gold/80 text-sm font-body">Memorial Record</p>
+              <p className="text-gold text-sm font-body">Memorial Record</p>
               <h2 className="font-display text-2xl text-white">{submission.title} {submission.fullName}</h2>
             </div>
             <button
@@ -516,7 +516,7 @@ function DetailModal({
           <div className="grid gap-7">
             <div className="flex items-center justify-between pb-4 border-b border-cream-dark">
               <div className="flex items-center gap-3">
-                <span className="font-body text-sm text-charcoal/60">Status:</span>
+                <span className="font-body text-sm text-charcoal/75">Status:</span>
                 <StatusBadge status={submission.status} />
               </div>
               <div className="flex gap-2">
@@ -543,15 +543,15 @@ function DetailModal({
               <h3 className="font-display text-lg text-maroon mb-3">Deceased Member Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Full Name</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Full Name</p>
                   <p className="font-body text-charcoal">{submission.fullName}</p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Title</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Title</p>
                   <p className="font-body text-charcoal">{submission.title}</p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Date of Passing</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Date of Passing</p>
                   <p className="font-body text-charcoal">
                     {new Date(submission.passingDate).toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -561,16 +561,16 @@ function DetailModal({
                   </p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Jurisdiction</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Jurisdiction</p>
                   <p className="font-body text-charcoal">{submission.jurisdiction}</p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Years of Service</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Years of Service</p>
                   <p className="font-body text-charcoal">{submission.yearsOfService}</p>
                 </div>
                 {submission.causeOfDeath && (
                   <div>
-                    <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Cause of Death</p>
+                    <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Cause of Death</p>
                     <p className="font-body text-charcoal">{submission.causeOfDeath}</p>
                   </div>
                 )}
@@ -627,7 +627,7 @@ function DetailModal({
                 <div className="grid grid-cols-2 gap-4">
                   {submission.memorialServiceDate && (
                     <div>
-                      <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Service Date</p>
+                      <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Service Date</p>
                       <p className="font-body text-charcoal">
                         {new Date(submission.memorialServiceDate).toLocaleDateString('en-US', {
                           year: 'numeric',
@@ -639,7 +639,7 @@ function DetailModal({
                   )}
                   {submission.memorialServiceLocation && (
                     <div>
-                      <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Location</p>
+                      <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Location</p>
                       <p className="font-body text-charcoal">{submission.memorialServiceLocation}</p>
                     </div>
                   )}
@@ -651,17 +651,17 @@ function DetailModal({
               <h3 className="font-display text-lg text-maroon mb-3">Submission Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Submitted By</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Submitted By</p>
                   <p className="font-body text-charcoal">{submission.submitterName}</p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Email</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Email</p>
                   <a href={`mailto:${submission.submitterEmail}`} className="font-body text-gold hover:underline">
                     {submission.submitterEmail}
                   </a>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Submitted On</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Submitted On</p>
                   <p className="font-body text-charcoal">
                     {new Date(submission.submittedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -673,7 +673,7 @@ function DetailModal({
                   </p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-charcoal/50 uppercase tracking-wide">Record ID</p>
+                  <p className="font-body text-xs text-charcoal/75 uppercase tracking-wide">Record ID</p>
                   <p className="font-body text-charcoal font-mono text-sm">{submission._id}</p>
                 </div>
               </div>
@@ -834,7 +834,7 @@ function DocumentPreviewModal({
               <h3 className="font-display text-lg text-charcoal">
                 {fileName || 'Document Preview'}
               </h3>
-              <p className="font-body text-xs text-charcoal/60">
+              <p className="font-body text-xs text-charcoal/75">
                 {viewerType === 'image' && 'Image'}
                 {viewerType === 'pdf' && 'PDF Document'}
                 {viewerType === 'word' && 'Word Document'}
@@ -857,7 +857,7 @@ function DocumentPreviewModal({
             </a>
             <button
               onClick={onClose}
-              className="p-2 text-charcoal/60 hover:text-charcoal transition-colors"
+              className="p-2 text-charcoal/75 hover:text-charcoal transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -875,7 +875,7 @@ function DocumentPreviewModal({
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                <span className="font-body text-sm text-charcoal/60">Loading document...</span>
+                <span className="font-body text-sm text-charcoal/75">Loading document...</span>
               </div>
             </div>
           )}
@@ -1002,6 +1002,9 @@ export default function AdminDashboard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | SubmissionStatus>('all');
+  const [jurisdictionFilter, setJurisdictionFilter] = useState<string>('all');
+  const [dateRangeStart, setDateRangeStart] = useState<string>('');
+  const [dateRangeEnd, setDateRangeEnd] = useState<string>('');
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'jurisdiction'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -1029,10 +1032,17 @@ export default function AdminDashboard() {
     return <LoadingSkeleton />;
   }
 
+  // Extract unique jurisdictions for filter dropdown
+  const uniqueJurisdictions = useMemo(() => {
+    const jurisdictions = new Set(submissions.map(s => s.jurisdiction));
+    return Array.from(jurisdictions).sort();
+  }, [submissions]);
+
   // Filter and sort submissions
-  const filteredSubmissions = (() => {
+  const filteredSubmissions = useMemo(() => {
     let result = [...submissions];
 
+    // Text search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(s =>
@@ -1042,6 +1052,22 @@ export default function AdminDashboard() {
       );
     }
 
+    // Jurisdiction filter
+    if (jurisdictionFilter !== 'all') {
+      result = result.filter(s => s.jurisdiction === jurisdictionFilter);
+    }
+
+    // Date range filter (based on passing date)
+    if (dateRangeStart) {
+      const startDate = new Date(dateRangeStart).getTime();
+      result = result.filter(s => new Date(s.passingDate).getTime() >= startDate);
+    }
+    if (dateRangeEnd) {
+      const endDate = new Date(dateRangeEnd).getTime() + 86400000; // Include the end date
+      result = result.filter(s => new Date(s.passingDate).getTime() < endDate);
+    }
+
+    // Sort
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -1059,7 +1085,19 @@ export default function AdminDashboard() {
     });
 
     return result;
-  })();
+  }, [submissions, searchQuery, jurisdictionFilter, dateRangeStart, dateRangeEnd, sortBy, sortOrder]);
+
+  // Check if any filters are active
+  const hasActiveFilters = searchQuery || statusFilter !== 'all' || jurisdictionFilter !== 'all' || dateRangeStart || dateRangeEnd;
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setJurisdictionFilter('all');
+    setDateRangeStart('');
+    setDateRangeEnd('');
+  };
 
   const handleSort = (field: 'date' | 'name' | 'jurisdiction') => {
     if (sortBy === field) {
@@ -1182,37 +1220,101 @@ export default function AdminDashboard() {
         {/* Submissions Table */}
         <div className="memorial-card">
           <div className="px-6 py-4 border-b border-cream-dark">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            {/* Header row with title and export */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
               <h2 className="font-display text-xl text-maroon">Memorial Submissions</h2>
-              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <div className="relative">
-                  <svg className="w-5 h-5 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search by name, jurisdiction..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="elegant-input py-2 text-sm w-full sm:w-80 sm:min-w-[280px]"
-                    style={{ paddingLeft: '2.75rem' }}
-                  />
-                </div>
+              <ExportButtons
+                submissions={filteredSubmissions}
+                statusFilter={statusFilter}
+                isLoading={!submissions}
+              />
+            </div>
+
+            {/* Filters row */}
+            <div className="flex flex-col lg:flex-row gap-3">
+              {/* Search input */}
+              <div className="relative flex-1 lg:max-w-xs">
+                <svg className="w-5 h-5 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by name, title..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="elegant-input py-2 text-sm w-full"
+                  style={{ paddingLeft: '2.75rem' }}
+                  aria-label="Search submissions"
+                />
+              </div>
+
+              {/* Filter dropdowns */}
+              <div className="flex flex-wrap gap-3">
+                {/* Status filter */}
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
                   className="elegant-input elegant-select py-2 text-sm w-full sm:w-32"
+                  aria-label="Filter by status"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="reviewed">Reviewed</option>
                   <option value="published">Published</option>
                 </select>
-                <ExportButtons
-                  submissions={filteredSubmissions}
-                  statusFilter={statusFilter}
-                  isLoading={!submissions}
-                />
+
+                {/* Jurisdiction filter */}
+                <select
+                  value={jurisdictionFilter}
+                  onChange={(e) => setJurisdictionFilter(e.target.value)}
+                  className="elegant-input elegant-select py-2 text-sm w-full sm:w-40"
+                  aria-label="Filter by jurisdiction"
+                >
+                  <option value="all">All Jurisdictions</option>
+                  {uniqueJurisdictions.map((jurisdiction) => (
+                    <option key={jurisdiction} value={jurisdiction}>
+                      {jurisdiction}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Date range filters */}
+                <div className="flex items-center gap-2">
+                  <label htmlFor="dateStart" className="font-body text-xs text-charcoal/75 whitespace-nowrap">
+                    Passing Date:
+                  </label>
+                  <input
+                    id="dateStart"
+                    type="date"
+                    value={dateRangeStart}
+                    onChange={(e) => setDateRangeStart(e.target.value)}
+                    className="elegant-input py-2 text-sm w-36"
+                    aria-label="Start date"
+                  />
+                  <span className="text-charcoal/75 text-sm">to</span>
+                  <input
+                    id="dateEnd"
+                    type="date"
+                    value={dateRangeEnd}
+                    onChange={(e) => setDateRangeEnd(e.target.value)}
+                    className="elegant-input py-2 text-sm w-36"
+                    aria-label="End date"
+                  />
+                </div>
+
+                {/* Clear filters button */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-body text-maroon hover:text-maroon-dark hover:bg-maroon/10 rounded-lg transition-colors"
+                    aria-label="Clear all filters"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Clear Filters
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1278,7 +1380,7 @@ export default function AdminDashboard() {
                       <svg className="w-12 h-12 text-charcoal/20 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                      <p className="font-body text-charcoal/50">No submissions found</p>
+                      <p className="font-body text-charcoal/75">No submissions found</p>
                     </td>
                   </tr>
                 ) : (
@@ -1291,7 +1393,7 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-body font-medium text-charcoal">{submission.fullName}</p>
-                          <p className="font-body text-xs text-charcoal/50 md:hidden">{submission.jurisdiction}</p>
+                          <p className="font-body text-xs text-charcoal/75 md:hidden">{submission.jurisdiction}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -1331,7 +1433,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="px-6 py-4 border-t border-cream-dark bg-cream-dark/20">
-            <p className="font-body text-sm text-charcoal/60">
+            <p className="font-body text-sm text-charcoal/75">
               Showing {filteredSubmissions.length} of {stats.total} submissions
             </p>
           </div>
