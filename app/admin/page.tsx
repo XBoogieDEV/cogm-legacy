@@ -1022,24 +1022,16 @@ export default function AdminDashboard() {
   const updateStatusMutation = useMutation(api.submissions.updateStatus);
   const removeMutation = useMutation(api.submissions.remove);
 
-  // Redirect to login if not authenticated
-  if (!authLoading && !isAuthenticated) {
-    router.push('/admin/login');
-    return null;
-  }
-
-  if (authLoading || !submissions || !stats) {
-    return <LoadingSkeleton />;
-  }
-
-  // Extract unique jurisdictions for filter dropdown
+  // Extract unique jurisdictions for filter dropdown (must be before conditional returns)
   const uniqueJurisdictions = useMemo(() => {
+    if (!submissions) return [];
     const jurisdictions = new Set(submissions.map(s => s.jurisdiction));
     return Array.from(jurisdictions).sort();
   }, [submissions]);
 
-  // Filter and sort submissions
+  // Filter and sort submissions (must be before conditional returns)
   const filteredSubmissions = useMemo(() => {
+    if (!submissions) return [];
     let result = [...submissions];
 
     // Text search filter
@@ -1098,6 +1090,16 @@ export default function AdminDashboard() {
     setDateRangeStart('');
     setDateRangeEnd('');
   };
+
+  // Redirect to login if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    router.push('/admin/login');
+    return null;
+  }
+
+  if (authLoading || !submissions || !stats) {
+    return <LoadingSkeleton />;
+  }
 
   const handleSort = (field: 'date' | 'name' | 'jurisdiction') => {
     if (sortBy === field) {
